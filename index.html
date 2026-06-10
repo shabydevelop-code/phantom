@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Phantom Slayer Setup Guide v1.6.23</title>
+    
+    <!-- PWA & Mobile Optimization Meta Tags -->
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👻</text></svg>">
+
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --dark-bg: #0a0a0a;
+            --terminal-font: 'Courier New', Courier, monospace;
+            --link-color: #00ffcc;
+            --disabled-color: #004400;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-green);
+            font-family: var(--terminal-font);
+            margin: 0;
+            /* Safe area implementation */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            overflow-x: hidden;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+
+        /* CRT Scanline Effect (Non-blocking pointer events) */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 999;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Presentation Container optimized for Samsung S25 mobile-first layout */
+        .presentation-container {
+            width: 100%;
+            max-width: 412px; /* S25 Width standard */
+            height: 540px; /* Fixed height to prevent layout jumps across steps */
+            margin: 15px auto;
+            position: relative;
+            border: 2px solid var(--neon-green);
+            padding: 24px;
+            box-shadow: 0 0 20px var(--neon-green);
+            background: rgba(0, 15, 0, 0.45);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            border-radius: 8px;
+        }
+
+        /* Expanded responsive layout for tablets / desktops */
+        @media (min-width: 768px) {
+            .presentation-container {
+                max-width: 850px;
+                height: 590px; /* Adjusted desktop height */
+                padding: 40px;
+            }
+        }
+
+        .slide-wrapper {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+            padding-right: 8px;
+        }
+
+        /* Custom Neon Webkit Scrollbars for premium retro feel */
+        .slide-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        .slide-wrapper::-webkit-scrollbar-track {
+            background: rgba(0, 20, 0, 0.3);
+            border-radius: 3px;
+        }
+        .slide-wrapper::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+            border-radius: 3px;
+            box-shadow: 0 0 5px var(--neon-green);
+        }
+        .slide-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+        }
+
+        .slide {
+            display: none;
+            height: 100%;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--neon-green);
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        p, li {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        @media (min-width: 768px) {
+            p, li {
+                font-size: 1.15rem;
+            }
+        }
+
+        ul {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: underline;
+            transition: color 0.2s, background-color 0.2s;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        a:hover, a:focus {
+            color: black;
+            background-color: var(--link-color);
+            text-shadow: none;
+            outline: none;
+        }
+
+        /* Codeblock box */
+        .code-container {
+            position: relative;
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        .code-block {
+            background: #000;
+            border: 1px dashed var(--neon-green);
+            padding: 16px 55px 16px 16px;
+            color: #fff;
+            font-weight: bold;
+            margin: 0;
+            word-break: break-all;
+            white-space: pre-wrap;
+            font-family: var(--terminal-font);
+            font-size: 0.9rem;
+            border-radius: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .code-block {
+                font-size: 1rem;
+                padding-right: 65px;
+            }
+        }
+
+        .copy-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .copy-button:hover, .copy-button:focus {
+            background: var(--neon-green);
+            color: black;
+            outline: none;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            align-items: center;
+        }
+
+        button.nav-btn {
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            padding: 10px 24px;
+            font-family: var(--terminal-font);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            border-radius: 4px;
+            min-width: 100px;
+        }
+
+        button.nav-btn:hover:not(:disabled), button.nav-btn:focus:not(:disabled) {
+            background: var(--neon-green);
+            color: black;
+            outline: none;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        button.nav-btn:disabled {
+            color: var(--disabled-color);
+            border-color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        /* Segmented Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 24px;
+        }
+
+        .progress-segment {
+            flex-grow: 1;
+            height: 100%;
+            background: rgba(0, 255, 0, 0.15);
+            border: 1px solid var(--disabled-color);
+            border-radius: 2px;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .progress-segment:hover, .progress-segment:focus-visible {
+            background: rgba(0, 255, 0, 0.35);
+            outline: none;
+        }
+
+        .progress-segment.active {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        /* Retro loading screen to prevent FOUC */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--dark-bg);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--terminal-font);
+            color: var(--neon-green);
+            transition: opacity 0.5s ease-out;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px dashed var(--neon-green);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Keyboard outline accessibility highlight */
+        *:focus-visible {
+            outline: 2px solid var(--link-color) !important;
+            outline-offset: 4px;
+        }
+
+        /* RTL & Language Selector styles */
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        .rtl ul {
+            padding-left: 0;
+            padding-right: 20px;
+        }
+        .rtl .copy-button {
+            right: auto;
+            left: 8px;
+        }
+        .rtl .code-block {
+            padding: 16px 16px 16px 55px;
+        }
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+            width: 100%;
+            direction: ltr !important;
+        }
+        .progress-container-header {
+            flex-grow: 1;
+            margin-bottom: 0 !important;
+        }
+        .control-btn {
+            background: transparent;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-green);
+            padding: 4px 10px;
+            font-family: var(--terminal-font);
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+        .control-btn:hover, .control-btn:focus {
+            background: var(--neon-green);
+            color: black;
+            outline: none;
+            box-shadow: 0 0 8px var(--neon-green);
+        }
+
+        /* Hunter Mode Special Red Glow Theme */
+        body.hunter-mode-active {
+            --neon-green: #ff3300;
+            --disabled-color: #551100;
+            --link-color: #ff9900;
+        }
+        body.hunter-mode-active .presentation-container {
+            animation: hunterPulse 1.5s infinite alternate;
+            box-shadow: 0 0 25px #ff3300;
+        }
+        @keyframes hunterPulse {
+            0% {
+                box-shadow: 0 0 15px #ff3300, inset 0 0 5px rgba(255, 51, 0, 0.2);
+            }
+            100% {
+                box-shadow: 0 0 30px #ff3300, inset 0 0 15px rgba(255, 51, 0, 0.4);
+            }
+        }
+        
+        /* Highlight box for key cognitive/accessibility facts */
+        .info-box {
+            border: 1px dashed var(--link-color);
+            padding: 12px;
+            margin: 15px 0;
+            color: var(--link-color);
+            background: rgba(0, 255, 204, 0.05);
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+        body.hunter-mode-active .info-box {
+            background: rgba(255, 153, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Retro Splash Loading Screen -->
+    <div id="splash-screen" role="status" aria-label="Loading Setup Guide">
+        <div class="spinner"></div>
+        <div style="font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; font-family: var(--terminal-font);">SYSTEM INITIALIZING...</div>
+    </div>
+
+    <main class="presentation-container">
+        <!-- Progress Indicator & Language Selector -->
+        <div class="header-controls">
+            <div class="progress-container progress-container-header" id="progressContainer" aria-hidden="true"></div>
+            <button id="muteBtn" class="control-btn" onclick="toggleMute()" aria-label="Mute Sound">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+            </button>
+            <button id="langBtn" class="control-btn" onclick="toggleLanguage()" aria-label="Switch Language">HE</button>
+        </div>
+
+        <div class="slide-wrapper">
+            <!-- Slides are dynamically injected by JavaScript -->
+        </div>
+
+        <nav class="nav-controls" aria-label="Slide Navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Prev</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
+        </nav>
+    </main>
+
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js').catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Hide Splash Screen (FOUC Prevention)
+        window.addEventListener('DOMContentLoaded', () => {
+            const splash = document.getElementById('splash-screen');
+            setTimeout(() => {
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 500);
+            }, 800);
+            renderSlides();
+        });
+
+        let currentLang = 'en';
+        let currentSlide = 0;
+        let slides = [];
+        const progressContainer = document.getElementById('progressContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const langBtn = document.getElementById('langBtn');
+        let isMuted = false;
+
+        // Premium Flaticon-style SVG Icons (rendered inline for complete PWA offline support)
+        const speakerOnSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
+        const speakerOffSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`;
+
+        // Preload sounds
+        const stepAudio = new Audio('phantom_step.wav');
+        const gameOverAudio = new Audio('phantom_game_over.wav');
+
+        // Locales dictionary
+        const locales = {
+            en: {
+                title: "Phantom Slayer Setup Guide v1.6.23",
+                prev: "Prev",
+                next: "Next",
+                copyLabel: "Copy Command",
+                langText: "עב",
+                langAria: "Switch to Hebrew",
+                muteAria: "Mute Sound",
+                unmuteAria: "Unmute Sound",
+                slides: [
+                    `<h1>> PHANTOM SLAYER</h1>
+                      <p>Welcome, Slayer.</p>
+                     <p>This guide will initialize the XRoar Emulator on your Windows system to launch the legendary 1982 3D maze shooter.</p>
+                     <div class="info-box">DID YOU KNOW? NAVIGATING A 3D MAZE STIMULATES THE BRAIN'S COGNITIVE MAPPING CAPACITY, GREATLY ENHANCING SPATIAL AWARENESS AND DIRECTIONAL MEMORY.
+                     <br><br>
+                      NOTE: ACTIVATING HUNTER MODE (MENTIONED IN <a href="#" onclick="goToSlide(5); return false;">STEP 5</a>) IS MORE LIKELY TO INCREASE YOUR ABILITY TO DEVELOP THESE COGNITIVE BEHAVIORS BY PROVIDING A STRESS-FREE TRAINING ENVIRONMENT.</div>`,
+                    `<h1>> STEP 1: XROAR INSTALL</h1>
+                     <p>Download the version that matches your system:</p>
+                     <ul>
+                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">Download XRoar (64-bit Windows)</a></li>
+                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">Download XRoar (32-bit Windows)</a></li>
+                     </ul>
+                      <p>1. Create a folder named <strong>"XRoar"</strong> somewhere on your system (e.g., Desktop or C: drive).<br>
+                         2. Extract the ZIP contents into that folder.</p>`,
+                    `<h1>> STEP 2: SYSTEM ROMS</h1>
+                     <p>Download these essential firmware files:</p>
+                     <ul>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">Download ddos10.rom</a></li>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">Download d32.rom</a></li>
+                     </ul>
+                     <p>Move both files into the <strong>XRoar</strong> folder.</p>`,
+                    `<h1>> STEP 3: GAME FILE</h1>
+                     <p>Download the virtual game disc image:</p>
+                     <ul>
+                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">Download Games_03.vdk</a></li>
+                     </ul>
+                     <p>Paste the vdk file directly into the <strong>XRoar</strong> folder.</p>`,
+                    `<h1>> STEP 4: CREATE SCRIPT</h1>
+                     <p>Open <strong>Notepad</strong> and paste this exact command:</p>
+                     <div class="code-container">
+                         <div class="code-block" id="commandText">.\\xroar.exe -load-fd0 "Games_03.vdk" -type "LOAD\\\"PHANTOM\\\":EXEC\\r"</div>
+                         <button class="copy-button" id="copyBtn" aria-label="Copy Command" onclick="copyToClipboard()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                     </div>
+                     <p>Save the file as a batch script inside the <strong>XRoar</strong> folder:</p>
+                     <ul>
+                         <li>Click <strong>File > Save As...</strong></li>
+                         <li>Set "Save as type" to <strong>All Files (*.*)</strong></li>
+                         <li>Name the file: <strong>phantom.bat</strong></li>
+                         <li>Save it directly inside the <strong>XRoar</strong> folder</li>
+                     </ul>`,
+                    `<h1>> HUNTER MODE (PAID OFFER)</h1>
+                     <p>ENABLE EXTRA-SENSORY CHEATS IN THE MAZE:</p>
+                     <ul>
+                         <li><strong>ONE-SHOT KILLS:</strong> ELIMINATE PHANTOMS WITH A SINGLE LASER BLAST.</li>
+                         <li><strong>OMNISCIENT MAP:</strong> PRESS <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> TO VIEW THE 2D MAZE MAP AT ANY TIME.</li>
+                         <li><strong>PHANTOM SHIELD:</strong> PHANTOMS CANNOT DAMAGE YOU UNLESS YOU DIRECTLY STEP INTO THEM.</li>
+                     </ul>
+                     <p>SURVIVAL IS GUARANTEED.</p>
+                      <p style="font-size: 1.2rem; font-weight: bold; border: 1px solid var(--neon-green); padding: 6px 12px; display: inline-block; margin: 15px 0; border-radius: 4px; background: rgba(255, 51, 0, 0.1);">PRICE: 10$</p>
+                     <p><strong>COGNITIVE BENEFITS:</strong> HUNTER MODE PROVIDES A STRESS-FREE TRAINING SETTING, MAKING IT EASIER FOR PLAYERS TO PRACTICE COGNITIVE MAPPING AND SPATIAL AWARENESS DEVELOPMENT WITHOUT PHANTOM INTERRUPTIONS.</p>
+                     <p style="margin-top: 18px;">FOR MORE INFORMATION: <a href="mailto:shaby.develop@gmail.com">SEND EMAIL TO DEVELOPER</a></p>`,
+                    `<h1>> INITIALIZATION COMPLETE</h1>
+                     <p>You are now ready to play.</p>
+                     <p><strong>ACTION:</strong> Double-click <strong>phantom.bat</strong> in your folder.</p>
+                     <p>GOOD LUCK IN THE MAZE.</p>`
+                ]
+            },
+            he: {
+                title: "מדריך התקנה של קוטל הפנטומים v1.6.23",
+                prev: "הקודם",
+                next: "הבא",
+                copyLabel: "העתק פקודה",
+                langText: "EN",
+                langAria: "עבור לאנגלית",
+                muteAria: "השתק קול",
+                unmuteAria: "בטל השתק",
+                slides: [
+                    `<h1>> קוטל הפנטומים</h1>
+                      <p>ברוך הבא, קוטל.</p>
+                     <p>מדריך זה יאתחל את אמולטור XRoar במערכת הווינדוס שלך כדי להריץ את משחק המבוך התלת-ממדי האגדי משנת 1982.</p>
+                     <div class="info-box">הידעת? ניווט במבוך תלת-ממדי מעורר את יכולת המיפוי הקוגניטיבית של המוח, ומשפר משמעותית את הראייה המרחבית ואת זיכרון הכיוון וההתמצאות במרחב.
+                     <br><br>
+                      הערה: הפעלת מצב צייד (המוזכר ב<a href="#" onclick="goToSlide(5); return false;">שלב 5</a>) סביר להניח שתגביר את היכולת שלך לפתח התנהגויות קוגניטיביות אלו על ידי מתן סביבת אימון ללא לחץ.</div>`,
+                    `<h1>> שלב 1: התקנת XROAR</h1>
+                     <p>הורד את הגרסה המתאימה למערכת שלך:</p>
+                     <ul>
+                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">הורד את XRoar (ווינדוס 64-סיביות)</a></li>
+                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">הורד את XRoar (ווינדוס 32-סיביות)</a></li>
+                     </ul>
+                      <p>1. צור תיקייה בשם <strong>"XRoar"</strong> במקום כלשהו במערכת שלך (לדוגמה, בשולחן העבודה או בכונן C).<br>
+                         2. חלץ את תכולת קובץ ה-ZIP לתוך התיקייה הזו.</p>`,
+                    `<h1>> שלב 2: קבצי ROM של המערכת</h1>
+                     <p>הורד את קבצי הקושחה החיוניים הבאים:</p>
+                     <ul>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">הורד את ddos10.rom</a></li>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">הורד את d32.rom</a></li>
+                     </ul>
+                     <p>העבר את שני הקבצים ישירות לתיקיית <strong>XRoar</strong>.</p>`,
+                    `<h1>> שלב 3: קובץ המשחק</h1>
+                     <p>הורד את תמונת דיסק המשחק הווירטואלי:</p>
+                     <ul>
+                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">הורד את Games_03.vdk</a></li>
+                     </ul>
+                     <p>הדבק את קובץ ה-vdk ישירות לתיקיית <strong>XRoar</strong>.</p>`,
+                    `<h1>> שלב 4: יצירת סקריפט</h1>
+                     <p>פתח את <strong>פנקס הרשימות (Notepad)</strong> והדבק את הפקודה המדויקת הזו:</p>
+                     <div class="code-container">
+                         <div class="code-block" id="commandText">.\\xroar.exe -load-fd0 "Games_03.vdk" -type "LOAD\\\"PHANTOM\\\":EXEC\\r"</div>
+                         <button class="copy-button" id="copyBtn" aria-label="העתק פקודה" onclick="copyToClipboard()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                     </div>
+                     <p>שמור את הקובץ כסקריפט אצווה (Batch) בתוך תיקיית <strong>XRoar</strong>:</p>
+                     <ul>
+                         <li>לחץ על <strong>קובץ > שמירה בשם...</strong></li>
+                         <li>הגדר "שמור כסוג" ל<strong>כל הקבצים (*.*)</strong></li>
+                         <li>תן לקובץ את השם: <strong>phantom.bat</strong></li>
+                         <li>שמור אותו ישירות בתוך תיקיית <strong>XRoar</strong></li>
+                     </ul>`,
+                    `<h1>> מצב צייד (הצעה בתשלום)</h1>
+                     <p>הפעל צ'יטים על-חושיים במבוך:</p>
+                     <ul>
+                         <li><strong>הריגה בירייה אחת:</strong> חסל פנטומים בירייה בודדת של לייזר.</li>
+                         <li><strong>מפה מקיפה:</strong> לחץ על המקש <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> כדי לצפות במפה הדו-ממדית בכל עת.</li>
+                         <li><strong>מגן פנטומים:</strong> הפנטומים לא יכולים לפגוע בך אלא אם כן תצעד ישירות לתוכם.</li>
+                     </ul>
+                     <p>ההישרדות מובטחת.</p>
+                      <p style="font-size: 1.2rem; font-weight: bold; border: 1px solid var(--neon-green); padding: 6px 12px; display: inline-block; margin: 15px 0; border-radius: 4px; background: rgba(255, 51, 0, 0.1);">מחיר: 30 ש"ח</p>
+                     <p><strong>יתרונות קוגניטיביים:</strong> מצב צייד מספק סביבת אימון ללא לחץ, מה שמקל על שחקנים לתרגל פיתוח ראייה מרחבית ומיפוי מבוכים קוגניטיבי ללא הפרעות מצד הפנטומים.</p>
+                     <p style="margin-top: 18px;">למידע נוסף: <a href="mailto:shaby.develop@gmail.com">שלח אימייל למפתח</a></p>`,
+                    `<h1>> האתחול הושלם</h1>
+                     <p>אתה מוכן לשחק כעת.</p>
+                     <p><strong>פעולה:</strong> לחץ פעמיים על <strong>phantom.bat</strong> בתיקייה שלך.</p>
+                     <p>בהצלחה במבוך.</p>`
+                ]
+            }
+        };
+
+        // Initialize hardware back-button history state
+        window.history.replaceState({slide: 0}, "", "");
+
+        function renderSlides() {
+            const wrapper = document.querySelector('.slide-wrapper');
+            const currentLocale = locales[currentLang];
+
+            // Set document and container language attributes
+            document.documentElement.lang = currentLang;
+            const container = document.querySelector('.presentation-container');
+            if (currentLang === 'he') {
+                document.body.classList.add('rtl');
+                container.classList.add('rtl');
+            } else {
+                document.body.classList.remove('rtl');
+                container.classList.remove('rtl');
+            }
+
+            // Generate slide contents dynamically
+            wrapper.innerHTML = currentLocale.slides.map((slideContent, index) => {
+                const isActive = index === currentSlide ? 'active' : '';
+                return `<section class="slide ${isActive}" aria-labelledby="slide${index+1}-title">${slideContent}</section>`;
+            }).join('');
+
+            // Update page metadata & language button
+            document.title = currentLocale.title;
+            prevBtn.textContent = currentLocale.prev;
+            nextBtn.textContent = currentLocale.next;
+            langBtn.textContent = currentLocale.langText;
+            langBtn.setAttribute('aria-label', currentLocale.langAria);
+
+            // Update mute button language text & aria
+            const muteBtn = document.getElementById('muteBtn');
+            if (isMuted) {
+                muteBtn.innerHTML = speakerOffSvg;
+                muteBtn.setAttribute('aria-label', currentLocale.unmuteAria);
+            } else {
+                muteBtn.innerHTML = speakerOnSvg;
+                muteBtn.setAttribute('aria-label', currentLocale.muteAria);
+            }
+
+            // Generate progress bar segments dynamically (N-1 segments representing transitions between slides)
+            const progressContainer = document.getElementById('progressContainer');
+            progressContainer.innerHTML = currentLocale.slides.slice(0, -1).map((_, index) => {
+                return `<div class="progress-segment" onclick="goToSlide(${index + 1})" role="button" aria-label="Go to slide ${index + 2}" tabindex="0"></div>`;
+            }).join('');
+
+            // Re-select slides DOM elements
+            slides = document.querySelectorAll('.slide');
+            updateUI();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'he' : 'en';
+            renderSlides();
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const currentLocale = locales[currentLang];
+            const muteBtn = document.getElementById('muteBtn');
+            if (isMuted) {
+                muteBtn.innerHTML = speakerOffSvg;
+                muteBtn.setAttribute('aria-label', currentLocale.unmuteAria);
+            } else {
+                muteBtn.innerHTML = speakerOnSvg;
+                muteBtn.setAttribute('aria-label', currentLocale.muteAria);
+            }
+        }
+
+        function updateUI() {
+            if (!slides || slides.length === 0) return;
+            // Update active slide
+            slides.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+
+            // Toggle special Hunter Mode color theme (Slide index 5)
+            const isHunterSlide = (currentSlide === 5);
+            document.body.classList.toggle('hunter-mode-active', isHunterSlide);
+
+            // Update Progress Bar Segments (Highlight completed steps: S active on slide S, 0 active on slide 0)
+            const segments = document.querySelectorAll('.progress-segment');
+            segments.forEach((seg, index) => {
+                seg.classList.toggle('active', index < currentSlide);
+            });
+
+            // Handle Button States (Prevent Loop)
+            prevBtn.disabled = (currentSlide === 0);
+            nextBtn.disabled = (currentSlide === slides.length - 1);
+        }
+
+        function goToSlide(index, isPopstate = false) {
+            if (index >= 0 && index < slides.length) {
+                currentSlide = index;
+                updateUI();
+                
+                // Play step sound, or play game over sound if reaching the final slide
+                if (!isMuted) {
+                    if (currentSlide === slides.length - 1) {
+                        gameOverAudio.currentTime = 0;
+                        gameOverAudio.play().catch(err => {
+                            console.warn("Game over audio playback failed:", err);
+                        });
+                    } else {
+                        stepAudio.currentTime = 0;
+                        stepAudio.play().catch(err => {
+                            console.warn("Step audio playback failed:", err);
+                        });
+                    }
+                }
+
+                // Push history state if not triggered by hardware back button (popstate)
+                if (!isPopstate) {
+                    window.history.pushState({slide: currentSlide}, "", "");
+                }
+            }
+        }
+
+        function changeSlide(direction, isPopstate = false) {
+            goToSlide(currentSlide + direction, isPopstate);
+        }
+
+        // Hardware Back-Button Logic
+        window.addEventListener('popstate', (event) => {
+            if (event.state && typeof event.state.slide === 'number') {
+                const targetSlide = event.state.slide;
+                const diff = targetSlide - currentSlide;
+                if (diff !== 0) {
+                    changeSlide(diff, true);
+                }
+            }
+        });
+
+        // Swipe Gesture controls for touch screens
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const gestureArea = document.querySelector('.presentation-container');
+
+        gestureArea.addEventListener('touchstart', (event) => {
+            touchStartX = event.changedTouches[0].screenX;
+        }, { passive: true });
+
+        gestureArea.addEventListener('touchend', (event) => {
+            touchEndX = event.changedTouches[0].screenX;
+            handleSwipeGesture();
+        }, { passive: true });
+
+        function handleSwipeGesture() {
+            const minSwipeDistance = 50; // pixels
+            if (touchEndX < touchStartX - minSwipeDistance) {
+                // Swipe Left -> Next
+                if (currentSlide < slides.length - 1) {
+                    changeSlide(1);
+                }
+            }
+            if (touchEndX > touchStartX + minSwipeDistance) {
+                // Swipe Right -> Prev
+                if (currentSlide > 0) {
+                    changeSlide(-1);
+                }
+            }
+        }
+
+        // Copy command logic
+        const copySvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+        const checkSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+        function copyToClipboard() {
+            const cmdElement = document.getElementById('commandText');
+            const cmdText = cmdElement.textContent || cmdElement.innerText;
+            
+            navigator.clipboard.writeText(cmdText).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerHTML = checkSvg;
+                setTimeout(() => {
+                    btn.innerHTML = copySvg;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy command to clipboard:', err);
+            });
+        }
+
+        // Keyboard Arrow Navigation for complete navigability (WCAG 2.1 AAA compliance)
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                if (currentSlide > 0) changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                if (currentSlide < slides.length - 1) changeSlide(1);
+            }
+        });
+
+        // Accessibility: allow Space/Enter keys to navigate when focusing on progress bar segments
+        progressContainer.addEventListener('keydown', (event) => {
+            if ((event.key === 'Enter' || event.key === ' ') && event.target.classList.contains('progress-segment')) {
+                event.preventDefault();
+                event.target.click();
+            }
+        });
+
+        // Initialize UI on load
+        renderSlides();
+    </script>
+</body>
+</html>
