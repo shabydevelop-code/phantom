@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.23</title>
+    <title>Phantom Slayer Setup Guide v1.6.39</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -68,6 +68,14 @@
             flex-direction: column;
             box-sizing: border-box;
             border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .presentation-container.visible {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* Expanded responsive layout for tablets / desktops */
@@ -284,38 +292,30 @@
             box-shadow: 0 0 8px var(--neon-green);
         }
 
-        /* Retro loading screen to prevent FOUC */
+        /* Simple loading screen to prevent FOUC */
         #splash-screen {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--dark-bg);
+            background: #0a0a0a !important;
             z-index: 10000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-family: var(--terminal-font);
             color: var(--neon-green);
-            transition: opacity 0.5s ease-out;
+            transition: opacity 0.3s ease-out;
         }
 
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px dashed var(--neon-green);
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 20px;
+        .loader-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         /* Keyboard outline accessibility highlight */
@@ -408,10 +408,9 @@
 </head>
 <body>
 
-    <!-- Retro Splash Loading Screen -->
+    <!-- Simple Splash Screen to prevent FOUC -->
     <div id="splash-screen" role="status" aria-label="Loading Setup Guide">
-        <div class="spinner"></div>
-        <div style="font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; font-family: var(--terminal-font);">SYSTEM INITIALIZING...</div>
+        <div class="loader-text">LOADING...</div>
     </div>
 
     <main class="presentation-container">
@@ -449,8 +448,9 @@
             const splash = document.getElementById('splash-screen');
             setTimeout(() => {
                 splash.style.opacity = '0';
-                setTimeout(() => splash.remove(), 500);
-            }, 800);
+                document.querySelector('.presentation-container').classList.add('visible');
+                setTimeout(() => splash.remove(), 300);
+            }, 200);
             renderSlides();
         });
 
@@ -474,7 +474,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.23",
+                title: "Phantom Slayer Setup Guide v1.6.39",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -541,7 +541,7 @@
                 ]
             },
             he: {
-                title: "מדריך התקנה של קוטל הפנטומים v1.6.23",
+                title: "מדריך התקנה של קוטל הפנטומים v1.6.39",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
