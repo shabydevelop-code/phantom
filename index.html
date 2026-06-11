@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.41</title>
+    <title>Phantom Slayer Setup Guide v1.6.43</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -481,7 +481,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.41",
+                title: "Phantom Slayer Setup Guide v1.6.43",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -548,7 +548,7 @@
                 ]
             },
             he: {
-                title: "מדריך התקנה של קוטל הפנטומים v1.6.41",
+                title: "מדריך התקנה של קוטל הפנטומים v1.6.43",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -616,8 +616,10 @@
             }
         };
 
-        // Initialize hardware back-button history state
-        window.history.replaceState({slide: 0}, "", "");
+        // Initialize history state tracking
+        let historyIndex = 0;
+        let maxHistoryIndex = 0;
+        window.history.replaceState({slide: 0, index: 0}, "", "");
 
         function renderSlides() {
             const wrapper = document.querySelector('.slide-wrapper');
@@ -728,21 +730,36 @@
                     }
                 }
 
-                // Push history state if not triggered by hardware back button (popstate)
+                 // Push history state if not triggered by hardware back button (popstate)
                 if (!isPopstate) {
-                    window.history.pushState({slide: currentSlide}, "", "");
+                    historyIndex++;
+                    maxHistoryIndex = historyIndex;
+                    window.history.pushState({slide: currentSlide, index: historyIndex}, "", "");
                 }
             }
         }
 
         function changeSlide(direction, isPopstate = false) {
-            goToSlide(currentSlide + direction, isPopstate);
+            if (direction === -1 && !isPopstate) {
+                // Trigger native browser back navigation to keep history in sync
+                window.history.back();
+            } else if (direction === 1 && !isPopstate && historyIndex < maxHistoryIndex) {
+                // Trigger native browser forward navigation if forward history exists
+                window.history.forward();
+            } else {
+                goToSlide(currentSlide + direction, isPopstate);
+            }
         }
 
         // Hardware Back-Button Logic
         window.addEventListener('popstate', (event) => {
             if (event.state && typeof event.state.slide === 'number') {
                 const targetSlide = event.state.slide;
+                const targetIndex = event.state.index || 0;
+                
+                // Keep historyIndex in sync with browser state
+                historyIndex = targetIndex;
+                
                 const diff = targetSlide - currentSlide;
                 if (diff !== 0) {
                     changeSlide(diff, true);
