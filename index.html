@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.39</title>
+    <title>Phantom Slayer Setup Guide v1.6.41</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -30,11 +30,11 @@
             /* Safe area implementation */
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
             display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-direction: column;
             min-height: 100vh;
             min-height: -webkit-fill-available;
             overflow-x: hidden;
+            overflow-y: auto;
             text-transform: uppercase;
             box-sizing: border-box;
         }
@@ -52,22 +52,19 @@
             pointer-events: none;
         }
 
-        /* Presentation Container optimized for Samsung S25 mobile-first layout */
+        /* Presentation Container optimized to take advantage of full screen width & height */
         .presentation-container {
             width: 100%;
-            max-width: 412px; /* S25 Width standard */
-            height: 540px; /* Fixed height to prevent layout jumps across steps */
-            margin: 15px auto;
+            flex-grow: 1;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
             position: relative;
-            border: 2px solid var(--neon-green);
-            padding: 24px;
-            box-shadow: 0 0 20px var(--neon-green);
+            padding: 24px 24px 100px 24px; /* Bottom padding ensures content doesn't get hidden under fixed navigation */
             background: rgba(0, 15, 0, 0.45);
             z-index: 10;
             display: flex;
             flex-direction: column;
             box-sizing: border-box;
-            border-radius: 8px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.5s ease-out;
@@ -81,9 +78,7 @@
         /* Expanded responsive layout for tablets / desktops */
         @media (min-width: 768px) {
             .presentation-container {
-                max-width: 850px;
-                height: 590px; /* Adjusted desktop height */
-                padding: 40px;
+                padding: 40px 40px 120px 40px;
             }
         }
 
@@ -93,32 +88,29 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            overflow-y: auto;
-            scrollbar-gutter: stable;
+            overflow-y: visible;
             padding-right: 8px;
         }
 
-        /* Custom Neon Webkit Scrollbars for premium retro feel */
-        .slide-wrapper::-webkit-scrollbar {
-            width: 6px;
+        /* Custom Neon Webkit Scrollbars on the page itself for premium retro feel */
+        body::-webkit-scrollbar {
+            width: 8px;
         }
-        .slide-wrapper::-webkit-scrollbar-track {
+        body::-webkit-scrollbar-track {
             background: rgba(0, 20, 0, 0.3);
-            border-radius: 3px;
         }
-        .slide-wrapper::-webkit-scrollbar-thumb {
+        body::-webkit-scrollbar-thumb {
             background: var(--neon-green);
-            border-radius: 3px;
             box-shadow: 0 0 5px var(--neon-green);
         }
-        .slide-wrapper::-webkit-scrollbar-thumb:hover {
+        body::-webkit-scrollbar-thumb:hover {
             background: #fff;
             box-shadow: 0 0 10px #fff;
         }
 
         .slide {
             display: none;
-            height: 100%;
+            height: auto;
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -228,10 +220,25 @@
         }
 
         .nav-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            align-items: center;
+            padding: 16px 24px calc(16px + env(safe-area-inset-bottom)) 24px;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid var(--neon-green);
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .nav-controls {
+                padding-left: 40px;
+                padding-right: 40px;
+            }
         }
 
         button.nav-btn {
@@ -474,7 +481,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.39",
+                title: "Phantom Slayer Setup Guide v1.6.41",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -541,7 +548,7 @@
                 ]
             },
             he: {
-                title: "מדריך התקנה של קוטל הפנטומים v1.6.39",
+                title: "מדריך התקנה של קוטל הפנטומים v1.6.41",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",

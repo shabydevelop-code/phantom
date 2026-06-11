@@ -1,0 +1,18 @@
+{
+  "name": "Phantom Slayer Setup Guide",
+  "short_name": "Phantom Guide",
+  "description": "Initialize XRoar and launch Phantom Slayer 1982",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "pic_1.png",
+      "sizes": "320x640",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
