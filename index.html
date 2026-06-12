@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.87</title>
+    <title>Phantom Slayer Setup Guide v1.6.89</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -433,7 +433,7 @@
 
         <nav class="nav-controls" aria-label="Slide Navigation">
             <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Prev</button>
-            <span id="appVersion" style="font-size: 0.75rem; opacity: 0.7; align-self: center; font-family: var(--terminal-font); color: var(--link-color);">v1.6.87</span>
+            <span id="appVersion" style="font-size: 0.75rem; opacity: 0.7; align-self: center; font-family: var(--terminal-font); color: var(--link-color);">v1.6.89</span>
             <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
         </nav>
     </main>
@@ -491,7 +491,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.87",
+                title: "Phantom Slayer Setup Guide v1.6.89",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -544,7 +544,7 @@
                 ]
             },
             he: {
-                title: "Phantom Slayer Setup Guide v1.6.87",
+                title: "Phantom Slayer Setup Guide v1.6.89",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -811,26 +811,17 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
 
-            // Calculate mathematically guaranteed maximum speed so particles fade out before leaving screen bounds
-            // Drag coefficient is 0.96, alpha decay is 0.008 -> max steps = 125. Sum of drag series is ~25.
-            const dragSum = 25;
-            const maxSpeedX = (centerX - 15) / dragSum;
-            const maxSpeedY = ((centerY - 15) / dragSum) * 1.35; // Compensate for gravity pulling vertical velocity down
-
             for (let i = 0; i < particleCount; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                // Calculate horizontal and vertical velocities independently to stretch width on desktop
-                const speedX = Math.random() * (maxSpeedX * 0.7) + (maxSpeedX * 0.3);
-                const speedY = Math.random() * (maxSpeedY * 0.7) + (maxSpeedY * 0.3);
-                
+                const speed = Math.random() * 12 + 5; // Reduced speed for a smaller, tighter explosion
                 particles.push({
                     x: centerX,
                     y: centerY,
-                    vx: Math.cos(angle) * speedX,
-                    vy: Math.sin(angle) * speedY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
                     rotation: Math.random() * Math.PI * 2,
                     rotationSpeed: (Math.random() - 0.5) * 0.4,
-                    size: (Math.random() * 8 + 10) * Math.min(1.5, Math.max(0.8, canvas.width / 600)),
+                    size: Math.random() * 8 + 10,
                     color: colors[Math.floor(Math.random() * colors.length)],
                     alpha: 1.0
                 });
@@ -844,18 +835,26 @@
 
                 let activeParticles = 0;
                 particles.forEach(p => {
-                    // Check if particle has fallen off the bottom of the screen
-                    if (p.y - p.size / 2 > canvas.height) return;
+                    // Clean up particle if it is completely off any screen boundary (left, right, top, or bottom)
+                    if (p.x + p.size / 2 < 0 || 
+                        p.x - p.size / 2 > canvas.width || 
+                        p.y + p.size / 2 < 0 || 
+                        p.y - p.size / 2 > canvas.height) {
+                        return;
+                    }
 
                     p.x += p.vx;
                     p.y += p.vy;
 
-                    p.vx *= 0.96; // Drag
-                    p.vy *= 0.96; // Drag
-                    p.vy += 0.18; // Constant gravity pulling them down off-screen
+                    p.vx *= 0.97; // Drag
+                    p.vy *= 0.97; // Drag
+                    p.vy += 0.22; // Gravity pulling them down off-screen
                     p.rotation += p.rotationSpeed;
 
-                    if (p.y - p.size / 2 <= canvas.height) {
+                    if (p.x + p.size / 2 >= 0 && 
+                        p.x - p.size / 2 <= canvas.width && 
+                        p.y + p.size / 2 >= 0 && 
+                        p.y - p.size / 2 <= canvas.height) {
                         activeParticles++;
                         ctx.save();
                         ctx.globalAlpha = 1.0; // Solid colors, do not dissolve
