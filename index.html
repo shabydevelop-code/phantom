@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.80</title>
+    <title>Phantom Slayer Setup Guide v1.6.87</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -433,7 +433,7 @@
 
         <nav class="nav-controls" aria-label="Slide Navigation">
             <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Prev</button>
-            <span id="appVersion" style="font-size: 0.75rem; opacity: 0.7; align-self: center; font-family: var(--terminal-font); color: var(--link-color);">v1.6.80</span>
+            <span id="appVersion" style="font-size: 0.75rem; opacity: 0.7; align-self: center; font-family: var(--terminal-font); color: var(--link-color);">v1.6.87</span>
             <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
         </nav>
     </main>
@@ -491,7 +491,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.80",
+                title: "Phantom Slayer Setup Guide v1.6.87",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -537,14 +537,14 @@
                          <li><strong>Omniscient Map:</strong> Press <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> to toggle the 2D map.</li>
                          <li><strong>Shield:</strong> Phantoms cannot harm you on contact. They only kill you if you run directly into them.</li>
                      </ul>
-                     <p>Interested? <a href="mailto:shaby.develop@gmail.com">Email the Developer</a></p>`,
+                     <p>Interested? <a href="mailto:shaby.develop@gmail.com?subject=Phantom%20Slayer%20-%20Hunter%20Mode">Email the Developer</a></p>`,
                     `<h1>> READY TO PLAY</h1>
                      <p>Double-click <strong>phantom.bat</strong> in your XRoar folder to start.</p>
                      <p>Enjoy the game.</p>`
                 ]
             },
             he: {
-                title: "Phantom Slayer Setup Guide v1.6.80",
+                title: "Phantom Slayer Setup Guide v1.6.87",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -591,7 +591,7 @@
                          <li><strong>מפה מלאה:</strong> לחץ על <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> להצגת מפה דו-ממדית.</li>
                          <li><strong>מגן פנטום:</strong> הפנטומים לא מזיקים במגע. הם הורגים אותך רק אם תצעד ישירות לתוכם.</li>
                      </ul>
-                     <p>מעוניין? <a href="mailto:shaby.develop@gmail.com">שלח אימייל למפתח</a></p>`,
+                     <p>מעוניין? <a href="mailto:shaby.develop@gmail.com?subject=Phantom%20Slayer%20-%20Hunter%20Mode">שלח אימייל למפתח</a></p>`,
                     `<h1>> מוכן למשחק</h1>
                      <p>הפעל את הקובץ <strong>phantom.bat</strong> בתיקיית XRoar כדי להתחיל.</p>
                      <p>תהנה מהמשחק.</p>`
@@ -811,17 +811,26 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
 
+            // Calculate mathematically guaranteed maximum speed so particles fade out before leaving screen bounds
+            // Drag coefficient is 0.96, alpha decay is 0.008 -> max steps = 125. Sum of drag series is ~25.
+            const dragSum = 25;
+            const maxSpeedX = (centerX - 15) / dragSum;
+            const maxSpeedY = ((centerY - 15) / dragSum) * 1.35; // Compensate for gravity pulling vertical velocity down
+
             for (let i = 0; i < particleCount; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 16 + 8;
+                // Calculate horizontal and vertical velocities independently to stretch width on desktop
+                const speedX = Math.random() * (maxSpeedX * 0.7) + (maxSpeedX * 0.3);
+                const speedY = Math.random() * (maxSpeedY * 0.7) + (maxSpeedY * 0.3);
+                
                 particles.push({
                     x: centerX,
                     y: centerY,
-                    vx: Math.cos(angle) * speed,
-                    vy: Math.sin(angle) * speed,
+                    vx: Math.cos(angle) * speedX,
+                    vy: Math.sin(angle) * speedY,
                     rotation: Math.random() * Math.PI * 2,
                     rotationSpeed: (Math.random() - 0.5) * 0.4,
-                    size: Math.random() * 10 + 12,
+                    size: (Math.random() * 8 + 10) * Math.min(1.5, Math.max(0.8, canvas.width / 600)),
                     color: colors[Math.floor(Math.random() * colors.length)],
                     alpha: 1.0
                 });
@@ -835,21 +844,21 @@
 
                 let activeParticles = 0;
                 particles.forEach(p => {
-                    if (p.alpha <= 0) return;
+                    // Check if particle has fallen off the bottom of the screen
+                    if (p.y - p.size / 2 > canvas.height) return;
 
                     p.x += p.vx;
                     p.y += p.vy;
+
                     p.vx *= 0.96; // Drag
                     p.vy *= 0.96; // Drag
-                    p.vy += 0.15; // Moderate gravity for arc trajectory
+                    p.vy += 0.18; // Constant gravity pulling them down off-screen
                     p.rotation += p.rotationSpeed;
-                    p.alpha -= 0.008; // Fade out slowly to last longer
 
-                    if (p.alpha > 0) {
+                    if (p.y - p.size / 2 <= canvas.height) {
                         activeParticles++;
                         ctx.save();
-                        ctx.globalAlpha = p.alpha;
-                        
+                        ctx.globalAlpha = 1.0; // Solid colors, do not dissolve
                         drawMiniPhantom(ctx, p.x, p.y, p.size, p.rotation, p.color);
                         ctx.restore();
                     }
