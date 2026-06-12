@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.71</title>
+    <title>Phantom Slayer Setup Guide v1.6.72</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -446,6 +446,15 @@
                     console.log('ServiceWorker registration failed: ', err);
                 });
             });
+
+            // Auto-reload the page when a new service worker takes over (skipWaiting)
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
         }
 
         // Hide Splash Screen (FOUC Prevention)
@@ -479,7 +488,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.71",
+                title: "Phantom Slayer Setup Guide v1.6.72",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -532,7 +541,7 @@
                 ]
             },
             he: {
-                title: "Phantom Slayer Setup Guide v1.6.71",
+                title: "Phantom Slayer Setup Guide v1.6.72",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
