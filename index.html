@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.64</title>
+    <title>Phantom Slayer Setup Guide v1.6.65</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -478,7 +478,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.64",
+                title: "Phantom Slayer Setup Guide v1.6.65",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -531,7 +531,7 @@
                 ]
             },
             he: {
-                title: "Phantom Slayer Setup Guide v1.6.64",
+                title: "Phantom Slayer Setup Guide v1.6.65",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -586,10 +586,7 @@
             }
         };
 
-        // Initialize history state tracking
-        let historyIndex = 0;
-        let maxHistoryIndex = 0;
-        window.history.replaceState({slide: 0, index: 0}, "", "");
+
 
         function renderSlides() {
             const wrapper = document.querySelector('.slide-wrapper');
@@ -680,7 +677,7 @@
             nextBtn.disabled = (currentSlide === slides.length - 1);
         }
 
-        function goToSlide(index, isPopstate = false) {
+        function goToSlide(index) {
             if (index >= 0 && index < slides.length) {
                 currentSlide = index;
                 updateUI();
@@ -699,43 +696,12 @@
                         });
                     }
                 }
-
-                 // Push history state if not triggered by hardware back button (popstate)
-                if (!isPopstate) {
-                    historyIndex++;
-                    maxHistoryIndex = historyIndex;
-                    window.history.pushState({slide: currentSlide, index: historyIndex}, "", "");
-                }
             }
         }
 
-        function changeSlide(direction, isPopstate = false) {
-            if (direction === -1 && !isPopstate) {
-                // Trigger native browser back navigation to keep history in sync
-                window.history.back();
-            } else if (direction === 1 && !isPopstate && historyIndex < maxHistoryIndex) {
-                // Trigger native browser forward navigation if forward history exists
-                window.history.forward();
-            } else {
-                goToSlide(currentSlide + direction, isPopstate);
-            }
+        function changeSlide(direction) {
+            goToSlide(currentSlide + direction);
         }
-
-        // Hardware Back-Button Logic
-        window.addEventListener('popstate', (event) => {
-            if (event.state && typeof event.state.slide === 'number') {
-                const targetSlide = event.state.slide;
-                const targetIndex = event.state.index || 0;
-                
-                // Keep historyIndex in sync with browser state
-                historyIndex = targetIndex;
-                
-                const diff = targetSlide - currentSlide;
-                if (diff !== 0) {
-                    changeSlide(diff, true);
-                }
-            }
-        });
 
         // Swipe Gesture controls for touch screens
         let touchStartX = 0;
