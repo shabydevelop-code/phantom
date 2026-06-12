@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.65</title>
+    <title>Phantom Slayer Setup Guide v1.6.71</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -376,22 +376,22 @@
             box-shadow: 0 0 8px var(--neon-green);
         }
 
-        /* Hunter Mode Special Red Glow Theme */
+        /* Hunter Mode Special Yellow-Gold Glow Theme */
         body.hunter-mode-active {
-            --neon-green: #ff3300;
-            --disabled-color: #551100;
-            --link-color: #ff9900;
+            --neon-green: #ffcc00;
+            --disabled-color: #554400;
+            --link-color: #ffaa00;
         }
         body.hunter-mode-active .presentation-container {
             animation: hunterPulse 1.5s infinite alternate;
-            box-shadow: 0 0 25px #ff3300;
+            box-shadow: 0 0 25px #ffcc00;
         }
         @keyframes hunterPulse {
             0% {
-                box-shadow: 0 0 15px #ff3300, inset 0 0 5px rgba(255, 51, 0, 0.2);
+                box-shadow: 0 0 15px #ffcc00, inset 0 0 5px rgba(255, 204, 0, 0.2);
             }
             100% {
-                box-shadow: 0 0 30px #ff3300, inset 0 0 15px rgba(255, 51, 0, 0.4);
+                box-shadow: 0 0 30px #ffcc00, inset 0 0 15px rgba(255, 204, 0, 0.4);
             }
         }
         
@@ -433,6 +433,7 @@
 
         <nav class="nav-controls" aria-label="Slide Navigation">
             <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">Prev</button>
+            <span id="appVersion" style="font-size: 0.75rem; opacity: 0.7; align-self: center; font-family: var(--terminal-font); color: var(--link-color);">v1.6.69</span>
             <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Next</button>
         </nav>
     </main>
@@ -478,7 +479,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.65",
+                title: "Phantom Slayer Setup Guide v1.6.71",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -491,7 +492,7 @@
                       <p>Setup guide for the legendary 1982 3D maze shooter on Windows via XRoar emulator.</p>
                      <div class="info-box">COGNITIVE BONUS: Navigating a 3D maze enhances spatial memory.
                      <br><br>
-                      Tip: Activate Hunter Mode (Step 5) for fun and stress-free training.</div>`,
+                      <strong style="color: #ffcc00;">Tip: Activate Hunter Mode (<a style="color: inherit;" href="#" onclick="goToSlide(5); return false;">Step 5</a>) for fun and stress-free training.</strong></div>`,
                     `<h1>> STEP 1: XROAR</h1>
                      <p>Download XRoar Emulator:</p>
                      <ul>
@@ -531,7 +532,7 @@
                 ]
             },
             he: {
-                title: "Phantom Slayer Setup Guide v1.6.65",
+                title: "Phantom Slayer Setup Guide v1.6.71",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -544,7 +545,7 @@
                       <p>מדריך התקנה של משחק המבוך התלת-ממדי האגדי משנת 1982 למחשב דרך אמולטור XRoar.</p>
                      <div class="info-box">יתרון קוגניטיבי: ניווט במבוך תלת-ממדי משפר את תפיסת המרחב והזיכרון.
                      <br><br>
-                      טיפ: הפעל מצב צייד (שלב 5) לאימון מהנה וללא לחץ.</div>`,
+                      <strong style="color: #ffcc00;">טיפ: הפעל מצב צייד (<a style="color: inherit;" href="#" onclick="goToSlide(5); return false;">שלב 5</a>) לאימון מהנה וללא לחץ.</strong></div>`,
                     `<h1>> שלב 1: XROAR</h1>
                      <p>הורד את אמולטור XRoar:</p>
                      <ul>
