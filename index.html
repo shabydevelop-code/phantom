@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Phantom Slayer Setup Guide v1.6.44</title>
+    <title>Phantom Slayer Setup Guide v1.6.56</title>
     
     <!-- PWA & Mobile Optimization Meta Tags -->
     <meta name="theme-color" content="#0a0a0a">
@@ -172,6 +172,8 @@
             position: relative;
             margin: 20px 0;
             width: 100%;
+            direction: ltr !important;
+            text-align: left !important;
         }
 
         .code-block {
@@ -186,6 +188,8 @@
             font-family: var(--terminal-font);
             font-size: 0.9rem;
             border-radius: 4px;
+            direction: ltr !important;
+            text-align: left !important;
         }
 
         @media (min-width: 768px) {
@@ -340,13 +344,6 @@
             padding-left: 0;
             padding-right: 20px;
         }
-        .rtl .copy-button {
-            right: auto;
-            left: 8px;
-        }
-        .rtl .code-block {
-            padding: 16px 16px 16px 55px;
-        }
         .header-controls {
             display: flex;
             align-items: center;
@@ -481,7 +478,7 @@
         // Locales dictionary
         const locales = {
             en: {
-                title: "Phantom Slayer Setup Guide v1.6.44",
+                title: "Phantom Slayer Setup Guide v1.6.56",
                 prev: "Prev",
                 next: "Next",
                 copyLabel: "Copy Command",
@@ -491,64 +488,50 @@
                 unmuteAria: "Unmute Sound",
                 slides: [
                     `<h1>> PHANTOM SLAYER</h1>
-                      <p>Welcome, Slayer.</p>
-                     <p>This guide will initialize the XRoar Emulator on your Windows system to launch the legendary 1982 3D maze shooter.</p>
-                     <div class="info-box">DID YOU KNOW? NAVIGATING A 3D MAZE STIMULATES THE BRAIN'S COGNITIVE MAPPING CAPACITY, GREATLY ENHANCING SPATIAL AWARENESS AND DIRECTIONAL MEMORY.
+                      <p>Setup guide for the legendary 1982 3D maze shooter on Windows via XRoar emulator.</p>
+                     <div class="info-box">COGNITIVE BONUS: Navigating a 3D maze enhances spatial memory.
                      <br><br>
-                      NOTE: ACTIVATING HUNTER MODE (MENTIONED IN <a href="#" onclick="goToSlide(5); return false;">STEP 5</a>) IS MORE LIKELY TO INCREASE YOUR ABILITY TO DEVELOP THESE COGNITIVE BEHAVIORS BY PROVIDING A STRESS-FREE TRAINING ENVIRONMENT.</div>`,
-                    `<h1>> STEP 1: XROAR INSTALL</h1>
-                     <p>Download the version that matches your system:</p>
+                      Tip: Activate Hunter Mode (Step 5) for fun and stress-free training.</div>`,
+                    `<h1>> STEP 1: XROAR</h1>
+                     <p>Download XRoar Emulator:</p>
                      <ul>
-                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">Download XRoar (64-bit Windows)</a></li>
-                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">Download XRoar (32-bit Windows)</a></li>
+                         <li>Download: <a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">64-bit Windows</a></li>
+                         <li>Download: <a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">32-bit Windows</a></li>
                      </ul>
-                      <p>1. Create a folder named <strong>"XRoar"</strong> somewhere on your system (e.g., Desktop or C: drive).<br>
-                         2. Extract the ZIP contents into that folder.</p>`,
+                      <p>Extract the zip into a new folder named <strong>"XRoar"</strong>.</p>`,
                     `<h1>> STEP 2: SYSTEM ROMS</h1>
-                     <p>Download these essential firmware files:</p>
+                     <p>Download firmware ROMs and move them into your <strong>XRoar</strong> folder:</p>
                      <ul>
-                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">Download ddos10.rom</a></li>
-                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">Download d32.rom</a></li>
-                     </ul>
-                     <p>Move both files into the <strong>XRoar</strong> folder.</p>`,
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">ddos10.rom</a></li>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">d32.rom</a></li>
+                     </ul>`,
                     `<h1>> STEP 3: GAME FILE</h1>
-                     <p>Download the virtual game disc image:</p>
+                     <p>Download the game disc image and move it into your <strong>XRoar</strong> folder:</p>
                      <ul>
-                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">Download Games_03.vdk</a></li>
-                     </ul>
-                     <p>Paste the vdk file directly into the <strong>XRoar</strong> folder.</p>`,
-                    `<h1>> STEP 4: CREATE SCRIPT</h1>
-                     <p>Open <strong>Notepad</strong> and paste this exact command:</p>
+                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">games_03.vdk</a></li>
+                     </ul>`,
+                    `<h1>> STEP 4: BATCH SCRIPT</h1>
+                     <p>Create a startup script. Copy this command:</p>
                      <div class="code-container">
                          <div class="code-block" id="commandText">.\\xroar.exe -load-fd0 "Games_03.vdk" -type "LOAD\\\"PHANTOM\\\":EXEC\\r"</div>
                          <button class="copy-button" id="copyBtn" aria-label="Copy Command" onclick="copyToClipboard()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                      </div>
-                     <p>Save the file as a batch script inside the <strong>XRoar</strong> folder:</p>
+                     <p>Save it as <strong>phantom.bat</strong> inside the <strong>XRoar</strong> folder.</p>`,
+                    `<h1>> HUNTER MODE (10$)</h1>
+                     <p>Cheats for stress-free spatial training:</p>
                      <ul>
-                         <li>Click <strong>File > Save As...</strong></li>
-                         <li>Set "Save as type" to <strong>All Files (*.*)</strong></li>
-                         <li>Name the file: <strong>phantom.bat</strong></li>
-                         <li>Save it directly inside the <strong>XRoar</strong> folder</li>
-                     </ul>`,
-                    `<h1>> HUNTER MODE (PAID OFFER)</h1>
-                     <p>ENABLE EXTRA-SENSORY CHEATS IN THE MAZE:</p>
-                     <ul>
-                         <li><strong>ONE-SHOT KILLS:</strong> ELIMINATE PHANTOMS WITH A SINGLE LASER BLAST.</li>
-                         <li><strong>OMNISCIENT MAP:</strong> PRESS <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> TO VIEW THE 2D MAZE MAP AT ANY TIME.</li>
-                         <li><strong>PHANTOM SHIELD:</strong> PHANTOMS CANNOT DAMAGE YOU UNLESS YOU DIRECTLY STEP INTO THEM.</li>
+                         <li><strong>One-Shot Kills:</strong> Eliminate Phantoms with a single blast.</li>
+                         <li><strong>Omniscient Map:</strong> Press <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> to toggle the 2D map.</li>
+                         <li><strong>Shield:</strong> Phantoms cannot harm you on contact. They only kill you if you run directly into them.</li>
                      </ul>
-                     <p>SURVIVAL IS GUARANTEED.</p>
-                      <p style="font-size: 1.2rem; font-weight: bold; border: 1px solid var(--neon-green); padding: 6px 12px; display: inline-block; margin: 15px 0; border-radius: 4px; background: rgba(255, 51, 0, 0.1);">PRICE: 10$</p>
-                     <p><strong>COGNITIVE BENEFITS:</strong> HUNTER MODE PROVIDES A STRESS-FREE TRAINING SETTING, MAKING IT EASIER FOR PLAYERS TO PRACTICE COGNITIVE MAPPING AND SPATIAL AWARENESS DEVELOPMENT WITHOUT PHANTOM INTERRUPTIONS.</p>
-                     <p style="margin-top: 18px;">FOR MORE INFORMATION: <a href="mailto:shaby.develop@gmail.com">SEND EMAIL TO DEVELOPER</a></p>`,
-                    `<h1>> INITIALIZATION COMPLETE</h1>
-                     <p>You are now ready to play.</p>
-                     <p><strong>ACTION:</strong> Double-click <strong>phantom.bat</strong> in your folder.</p>
-                     <p>GOOD LUCK IN THE MAZE.</p>`
+                     <p>Interested? <a href="mailto:shaby.develop@gmail.com">Email the Developer</a></p>`,
+                    `<h1>> READY TO PLAY</h1>
+                     <p>Double-click <strong>phantom.bat</strong> in your XRoar folder to start.</p>
+                     <p>Enjoy the game.</p>`
                 ]
             },
             he: {
-                title: "מדריך התקנה של קוטל הפנטומים v1.6.44",
+                title: "Phantom Slayer Setup Guide v1.6.56",
                 prev: "הקודם",
                 next: "הבא",
                 copyLabel: "העתק פקודה",
@@ -557,61 +540,48 @@
                 muteAria: "השתק קול",
                 unmuteAria: "בטל השתק",
                 slides: [
-                    `<h1>> קוטל הפנטומים</h1>
-                      <p>ברוך הבא, קוטל.</p>
-                     <p>מדריך זה יאתחל את אמולטור XRoar במערכת הווינדוס שלך כדי להריץ את משחק המבוך התלת-ממדי האגדי משנת 1982.</p>
-                     <div class="info-box">הידעת? ניווט במבוך תלת-ממדי מעורר את יכולת המיפוי הקוגניטיבית של המוח, ומשפר משמעותית את הראייה המרחבית ואת זיכרון הכיוון וההתמצאות במרחב.
+                    `<h1>> PHANTOM SLAYER</h1>
+                      <p>מדריך התקנה של משחק המבוך התלת-ממדי האגדי משנת 1982 למחשב דרך אמולטור XRoar.</p>
+                     <div class="info-box">יתרון קוגניטיבי: ניווט במבוך תלת-ממדי משפר את תפיסת המרחב והזיכרון.
                      <br><br>
-                      הערה: הפעלת מצב צייד (המוזכר ב<a href="#" onclick="goToSlide(5); return false;">שלב 5</a>) סביר להניח שתגביר את היכולת שלך לפתח התנהגויות קוגניטיביות אלו על ידי מתן סביבת אימון ללא לחץ.</div>`,
-                    `<h1>> שלב 1: התקנת XROAR</h1>
-                     <p>הורד את הגרסה המתאימה למערכת שלך:</p>
+                      טיפ: הפעל מצב צייד (שלב 5) לאימון מהנה וללא לחץ.</div>`,
+                    `<h1>> שלב 1: XROAR</h1>
+                     <p>הורד את אמולטור XRoar:</p>
                      <ul>
-                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">הורד את XRoar (ווינדוס 64-סיביות)</a></li>
-                         <li><a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">הורד את XRoar (ווינדוס 32-סיביות)</a></li>
+                         <li>הורדה: <a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w64.zip" target="_blank" rel="noopener">ווינדוס 64-סיביות</a></li>
+                         <li>הורדה: <a href="https://www.6809.org.uk/xroar/dl/xroar-1.11-w32.zip" target="_blank" rel="noopener">ווינדוס 32-סיביות</a></li>
                      </ul>
-                      <p>1. צור תיקייה בשם <strong>"XRoar"</strong> במקום כלשהו במערכת שלך (לדוגמה, בשולחן העבודה או בכונן C).<br>
-                         2. חלץ את תכולת קובץ ה-ZIP לתוך התיקייה הזו.</p>`,
-                    `<h1>> שלב 2: קבצי ROM של המערכת</h1>
-                     <p>הורד את קבצי הקושחה החיוניים הבאים:</p>
+                      <p>חלץ את קובץ ה-ZIP לתיקייה חדשה בשם <strong>"XRoar"</strong>.</p>`,
+                    `<h1>> שלב 2: קבצי מערכת</h1>
+                     <p>הורד את קבצי הקושחה והעבר אותם לתיקיית <strong>XRoar</strong>:</p>
                      <ul>
-                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">הורד את ddos10.rom</a></li>
-                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">הורד את d32.rom</a></li>
-                     </ul>
-                     <p>העבר את שני הקבצים ישירות לתיקיית <strong>XRoar</strong>.</p>`,
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/DOS/ddos10.rom" target="_blank" rel="noopener">ddos10.rom</a></li>
+                         <li><a href="https://colorcomputerarchive.com/repo/ROMs/XRoar/Dragon/BASIC_OS/d32.rom" target="_blank" rel="noopener">d32.rom</a></li>
+                     </ul>`,
                     `<h1>> שלב 3: קובץ המשחק</h1>
-                     <p>הורד את תמונת דיסק המשחק הווירטואלי:</p>
+                     <p>הורד את קובץ המשחק והעבר אותו לתיקיית <strong>XRoar</strong>:</p>
                      <ul>
-                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">הורד את Games_03.vdk</a></li>
-                     </ul>
-                     <p>הדבק את קובץ ה-vdk ישירות לתיקיית <strong>XRoar</strong>.</p>`,
-                    `<h1>> שלב 4: יצירת סקריפט</h1>
-                     <p>פתח את <strong>פנקס הרשימות (Notepad)</strong> והדבק את הפקודה המדויקת הזו:</p>
+                         <li><a href="https://www.dragon-it.co.uk/discs/games_03.vdk" target="_blank" rel="noopener">games_03.vdk</a></li>
+                     </ul>`,
+                    `<h1>> שלב 4: סקריפט הפעלה</h1>
+                     <p>העתק את הפקודה הבאה:</p>
                      <div class="code-container">
                          <div class="code-block" id="commandText">.\\xroar.exe -load-fd0 "Games_03.vdk" -type "LOAD\\\"PHANTOM\\\":EXEC\\r"</div>
                          <button class="copy-button" id="copyBtn" aria-label="העתק פקודה" onclick="copyToClipboard()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
                      </div>
-                     <p>שמור את הקובץ כסקריפט אצווה (Batch) בתוך תיקיית <strong>XRoar</strong>:</p>
-                     <ul>
-                         <li>לחץ על <strong>קובץ > שמירה בשם...</strong></li>
-                         <li>הגדר "שמור כסוג" ל<strong>כל הקבצים (*.*)</strong></li>
-                         <li>תן לקובץ את השם: <strong>phantom.bat</strong></li>
-                         <li>שמור אותו ישירות בתוך תיקיית <strong>XRoar</strong></li>
+                     <p>שמור את הקובץ בשם <strong>phantom.bat</strong> בתוך תיקיית <strong>XRoar</strong>.</p>
                      </ul>`,
-                    `<h1>> מצב צייד (הצעה בתשלום)</h1>
-                     <p>הפעל צ'יטים על-חושיים במבוך:</p>
+                    `<h1>> מצב צייד (30 ש"ח)</h1>
+                     <p>צ'יטים לאימון מרחבי קל וללא לחץ:</p>
                      <ul>
-                         <li><strong>הריגה בירייה אחת:</strong> חסל פנטומים בירייה בודדת של לייזר.</li>
-                         <li><strong>מפה מקיפה:</strong> לחץ על המקש <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> כדי לצפות במפה הדו-ממדית בכל עת.</li>
-                         <li><strong>מגן פנטומים:</strong> הפנטומים לא יכולים לפגוע בך אלא אם כן תצעד ישירות לתוכם.</li>
+                         <li><strong>ירייה מנצחת:</strong> חיסול פנטומים בירייה בודדת.</li>
+                         <li><strong>מפה מלאה:</strong> לחץ על <kbd style="background: #222; padding: 2px 6px; border: 1px solid var(--neon-green); border-radius: 3px; font-family: var(--terminal-font);">D</kbd> להצגת מפה דו-ממדית.</li>
+                         <li><strong>מגן פנטום:</strong> הפנטומים לא מזיקים במגע. הם הורגים אותך רק אם תצעד ישירות לתוכם.</li>
                      </ul>
-                     <p>ההישרדות מובטחת.</p>
-                      <p style="font-size: 1.2rem; font-weight: bold; border: 1px solid var(--neon-green); padding: 6px 12px; display: inline-block; margin: 15px 0; border-radius: 4px; background: rgba(255, 51, 0, 0.1);">מחיר: 30 ש"ח</p>
-                     <p><strong>יתרונות קוגניטיביים:</strong> מצב צייד מספק סביבת אימון ללא לחץ, מה שמקל על שחקנים לתרגל פיתוח ראייה מרחבית ומיפוי מבוכים קוגניטיבי ללא הפרעות מצד הפנטומים.</p>
-                     <p style="margin-top: 18px;">למידע נוסף: <a href="mailto:shaby.develop@gmail.com">שלח אימייל למפתח</a></p>`,
-                    `<h1>> האתחול הושלם</h1>
-                     <p>אתה מוכן לשחק כעת.</p>
-                     <p><strong>פעולה:</strong> לחץ פעמיים על <strong>phantom.bat</strong> בתיקייה שלך.</p>
-                     <p>בהצלחה במבוך.</p>`
+                     <p>מעוניין? <a href="mailto:shaby.develop@gmail.com">שלח אימייל למפתח</a></p>`,
+                    `<h1>> מוכן למשחק</h1>
+                     <p>הפעל את הקובץ <strong>phantom.bat</strong> בתיקיית XRoar כדי להתחיל.</p>
+                     <p>תהנה מהמשחק.</p>`
                 ]
             }
         };
