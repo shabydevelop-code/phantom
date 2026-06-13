@@ -1,4 +1,4 @@
-const CACHE_NAME = 'phantom-setup-v89';
+const CACHE_NAME = 'phantom-setup-v91';
 const ASSETS = [
   'index.html',
   'manifest.json',
